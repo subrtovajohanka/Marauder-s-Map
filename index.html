@@ -3,222 +3,18 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Plánka – inspirace</title>
-  <style>
-    :root{
-      --bg1:#1b0f0a;
-      --bg2:#070403;
-      --paper:#e7d4b2;
-      --paper2:#d2bb93;
-      --ink:#2b1a12;
-      --ui: rgba(255,255,255,.10);
-      --ui2: rgba(255,255,255,.16);
-      --glass: rgba(255,255,255,.06);
-    }
-    *{ box-sizing:border-box; }
-    body{
-      margin:0;
-      min-height:100svh;
-      display:grid;
-      place-items:center;
-      padding:22px;
-      color:#f3efe7;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
-      background:
-        radial-gradient(1200px 800px at 30% 18%, #2a1710 0%, var(--bg1) 55%, var(--bg2) 100%);
-    }
-    .frame{
-      width:min(1000px, 96vw);
-      border-radius:24px;
-      background: var(--glass);
-      border:1px solid var(--ui);
-      box-shadow: 0 20px 70px rgba(0,0,0,.5);
-      backdrop-filter: blur(10px);
-      overflow:hidden;
-    }
-    header{
-      display:flex; justify-content:space-between; align-items:center;
-      gap:12px;
-      padding:14px 14px 10px;
-    }
-    .title{ display:flex; flex-direction:column; gap:6px; }
-    h1{ margin:0; font-size:16px; letter-spacing:.2px; }
-    .sub{ margin:0; opacity:.75; font-size:12.5px; line-height:1.35; }
-    .controls{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; align-items:center;
-    }
-    .input{
-      display:flex; align-items:center; gap:8px;
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(0,0,0,.28);
-      border:1px solid var(--ui2);
-    }
-    .input input{
-      width:min(380px, 58vw);
-      border:none; outline:none;
-      background:transparent;
-      color:#fff;
-      font-size:14px;
-    }
-    .input input::placeholder{ color: rgba(255,255,255,.55); }
-    button{
-      border:none; cursor:pointer;
-      padding:10px 14px;
-      border-radius:14px;
-      font-weight:800;
-      font-size:12.5px;
-      letter-spacing:.25px;
-      color:#fff;
-      background: linear-gradient(180deg, rgba(255,255,255,.18), rgba(255,255,255,.08));
-      border:1px solid var(--ui2);
-      box-shadow: 0 10px 30px rgba(0,0,0,.28);
-      transition: transform .15s ease, filter .15s ease;
-      user-select:none;
-    }
-    button:hover{ transform: translateY(-1px); filter: brightness(1.08); }
-    button:active{ transform: translateY(0px) scale(.99); }
-
-    .stage{
-      position:relative;
-      height: min(650px, 72svh);
-      border-top:1px solid var(--ui);
-      background: rgba(0,0,0,.25);
-      overflow:hidden;
-    }
-
-    /* Parchment */
-    .parchment{
-      position:absolute; inset:0;
-      background:
-        radial-gradient(900px 520px at 28% 22%, rgba(255,255,255,.18) 0%, rgba(255,255,255,0) 55%),
-        radial-gradient(900px 520px at 80% 78%, rgba(255,255,255,.10) 0%, rgba(255,255,255,0) 55%),
-        linear-gradient(180deg, var(--paper) 0%, var(--paper2) 100%);
-      filter:saturate(1.06) contrast(1.02);
-      box-shadow: inset 0 0 0 2px rgba(0,0,0,.08);
-    }
-    .parchment::before{
-      content:"";
-      position:absolute; inset:-40px;
-      background:
-        radial-gradient(closest-side at 10% 16%, rgba(0,0,0,.12), transparent 72%),
-        radial-gradient(closest-side at 90% 18%, rgba(0,0,0,.10), transparent 72%),
-        radial-gradient(closest-side at 80% 90%, rgba(0,0,0,.14), transparent 70%),
-        radial-gradient(closest-side at 20% 88%, rgba(0,0,0,.10), transparent 74%),
-        repeating-linear-gradient(90deg, rgba(0,0,0,.03) 0 2px, transparent 2px 7px);
-      mix-blend-mode:multiply;
-      opacity:.9;
-      pointer-events:none;
-    }
-
-    /* Darkness layer that we "erase" with a brush canvas */
-    canvas#fog{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      mix-blend-mode:multiply;
-      opacity:1;
-      transition: opacity 900ms ease;
-    }
-
-    /* Ink network + characters */
-    canvas#ink{
-      position:absolute; inset:0;
-      width:100%; height:100%;
-      opacity:.98;
-    }
-
-    /* Torchlight */
-    .torch{
-      position:absolute; inset:0;
-      pointer-events:none;
-      opacity:0;
-      transition: opacity 700ms ease;
-      background:
-        radial-gradient(260px 260px at var(--mx, 50%) var(--my, 45%),
-          rgba(255,245,220,.55) 0%,
-          rgba(255,235,200,.20) 30%,
-          rgba(0,0,0,0) 70%);
-      mix-blend-mode: soft-light;
-    }
-
-    /* Overlay when hidden */
-    .veil{
-      position:absolute; inset:0;
-      display:grid; place-items:center;
-      text-align:center;
-      padding:22px;
-      background:
-        radial-gradient(700px 380px at 50% 35%, rgba(0,0,0,.55), rgba(0,0,0,.86)),
-        linear-gradient(180deg, rgba(0,0,0,.58), rgba(0,0,0,.80));
-      transition: opacity 900ms ease, transform 900ms ease;
-    }
-    .veil.hidden{
-      opacity:0;
-      transform: scale(1.02);
-      pointer-events:none;
-    }
-    .sigil{
-      width:90px; height:90px;
-      border-radius:26px;
-      border:1px solid rgba(255,255,255,.18);
-      background: rgba(255,255,255,.06);
-      box-shadow: inset 0 0 0 2px rgba(255,255,255,.06), 0 18px 60px rgba(0,0,0,.48);
-      display:grid; place-items:center;
-      margin:0 auto 14px;
-    }
-    .sigil span{ font-size:34px; opacity:.92; filter: drop-shadow(0 6px 12px rgba(0,0,0,.45)); }
-    .veil h2{ margin:0 0 8px; font-size:22px; letter-spacing:.2px; }
-    .veil p{ margin:0; opacity:.84; line-height:1.45; max-width: 60ch; }
-
-    .badge{
-      position:absolute; left:14px; top:14px;
-      font-size:12px;
-      color: rgba(43,26,18,.82);
-      background: rgba(255,255,255,.62);
-      border:1px solid rgba(0,0,0,.12);
-      border-radius:14px;
-      padding:8px 10px;
-      box-shadow: 0 10px 30px rgba(0,0,0,.18);
-      backdrop-filter: blur(6px);
-      opacity:.95;
-    }
-
-    .toast{
-      position:absolute;
-      left:14px; bottom:14px;
-      padding:10px 12px;
-      border-radius:14px;
-      background: rgba(0,0,0,.40);
-      border:1px solid rgba(255,255,255,.14);
-      backdrop-filter: blur(8px);
-      box-shadow: 0 14px 40px rgba(0,0,0,.35);
-      font-size:13px;
-      opacity:0;
-      transform: translateY(8px);
-      transition: opacity .25s ease, transform .25s ease;
-      pointer-events:none;
-    }
-    .toast.show{ opacity:1; transform: translateY(0); }
-
-    /* States */
-    .stage.active .torch{ opacity:1; }
-    .stage.active .badge{ opacity:.98; }
-    .stage.concealed canvas#fog{ opacity:1; }
-    .stage.revealed canvas#fog{ opacity:1; } /* still used, but erased by brush */
-
-    @media (max-width: 540px){
-      header{ flex-direction:column; align-items:stretch; }
-      .controls{ justify-content:stretch; }
-      .input input{ width:100%; }
-    }
-  </style>
+  <title>Plánka – kouzelný režim</title>
+  <link rel="stylesheet" href="./styles.css" />
 </head>
 <body>
-  <div class="frame">
-    <header>
-      <div class="title">
-        <h1>„Plánka“ (inspirace)</h1>
-        <p class="sub">Přísaha odhalí mapu. Pak ji odkrývej kurzorem jako kouzlem. Druhá přísaha ji schová.</p>
+  <div class="shell">
+    <header class="top">
+      <div class="brand">
+        <div class="sigil" aria-hidden="true">✦</div>
+        <div>
+          <div class="h1">Plánka</div>
+          <div class="sub">Napiš přísahu a odhaluj mapu kurzorem. Druhá přísaha ji schová.</div>
+        </div>
       </div>
 
       <div class="controls">
@@ -226,237 +22,38 @@
           <input id="phrase" placeholder="jsem připraven ke každé špatnosti" autocomplete="off" />
         </div>
         <button id="btn">Přísahat</button>
-        <button id="btnOff" title="Neplechu ukončit">Ukončit</button>
+        <button id="btnOff" class="ghost" title="Neplechu ukončit">Ukončit</button>
       </div>
     </header>
 
-    <div id="stage" class="stage concealed">
-      <div class="parchment"></div>
+    <main id="stage" class="stage concealed" aria-label="Mapa">
+      <div class="parchment" aria-hidden="true"></div>
 
-      <canvas id="ink"></canvas>
-      <canvas id="fog"></canvas>
+      <canvas id="ink" aria-hidden="true"></canvas>
+      <canvas id="fog" aria-hidden="true"></canvas>
 
-      <div class="torch" id="torch"></div>
+      <div id="torch" class="torch" aria-hidden="true"></div>
+
       <div class="badge">Tip: táhni myší / prstem po mapě 👀</div>
 
-      <div id="veil" class="veil">
-        <div>
-          <div class="sigil"><span>✦</span></div>
+      <section id="veil" class="veil" aria-live="polite">
+        <div class="veilCard">
+          <div class="veilSigil">✦</div>
           <h2>Tady nic není.</h2>
-          <p>Napiš přísahu <b>„jsem připraven ke každé špatnosti“</b> a mapa se začne probouzet.</p>
+          <p>Napiš <b>„jsem připraven ke každé špatnosti“</b> a mapa se probudí.</p>
+          <p class="tiny">Pak můžeš odhalovat pergamen kurzorem jako kouzlem.</p>
         </div>
-      </div>
+      </section>
 
-      <div id="toast" class="toast"></div>
-    </div>
+      <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    </main>
+
+    <footer class="foot">
+      <span>Made for chaos ✶</span>
+      <span class="muted">Inspirace “kouzelnou plánkou” — vlastní vizuál a procedurální mapa.</span>
+    </footer>
   </div>
 
-  <script>
-    const stage = document.getElementById('stage');
-    const veil  = document.getElementById('veil');
-    const toast = document.getElementById('toast');
-    const torch = document.getElementById('torch');
-    const phraseInput = document.getElementById('phrase');
-    const btn = document.getElementById('btn');
-    const btnOff = document.getElementById('btnOff');
-
-    const inkCanvas = document.getElementById('ink');
-    const fogCanvas = document.getElementById('fog');
-    const ictx = inkCanvas.getContext('2d');
-    const fctx = fogCanvas.getContext('2d');
-
-    const labels = [
-      "Zakázané schodiště","Knihovna","Velká síň","Dvořiště","Skrytá chodba",
-      "Tichý kout","Věžní schody","Zapomenuté dveře","Nádvoří","Společenská místnost",
-      "Starý kabinet","Průchod za obrazem","Kamenná galerie","Slepá ulička"
-    ];
-
-    const peopleNames = [
-      "Toulavý student","Paní Norris (asi ne)","Ztracený prefekt","Noční hlídka",
-      "Knihomol","Tichý běžec","Šeptal","Škodič","Zvěd","Někdo podezřelý"
-    ];
-
-    function norm(s){
-      return (s || "")
-        .toLowerCase()
-        .trim()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g,"")
-        .replace(/\s+/g," ");
-    }
-    const OATH_ON  = norm("jsem pripraven ke kazde spatnosti");
-    const OATH_OFF = norm("neplechu ukoncit");
-
-    function showToast(msg){
-      toast.textContent = msg;
-      toast.classList.add('show');
-      clearTimeout(showToast._t);
-      showToast._t = setTimeout(()=>toast.classList.remove('show'), 2000);
-    }
-
-    // --- canvas sizing (retina-friendly) ---
-    function fitCanvas(c){
-      const r = stage.getBoundingClientRect();
-      const dpr = Math.max(1, Math.min(2.2, window.devicePixelRatio || 1));
-      c.width  = Math.floor(r.width * dpr);
-      c.height = Math.floor(r.height * dpr);
-      const ctx = c.getContext('2d');
-      ctx.setTransform(dpr,0,0,dpr,0,0); // draw in CSS pixels
-      return { w: r.width, h: r.height };
-    }
-
-    let W=0,H=0, points=[], edges=[], people=[], revealed=false;
-
-    function rand(a,b){ return a + Math.random()*(b-a); }
-    function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-
-    function seedGraph(){
-      points = [];
-      edges = [];
-      const margin = 48;
-      const n = 46;
-
-      for(let i=0;i<n;i++){
-        points.push({ x: rand(margin, W-margin), y: rand(margin, H-margin) });
-      }
-
-      // Connect each point to a few nearest neighbors to make a "corridor" feel
-      for(let i=0;i<points.length;i++){
-        const a = points[i];
-        const dists = points.map((p,idx)=>({idx, d: Math.hypot(p.x-a.x, p.y-a.y)}))
-                            .filter(o=>o.idx!==i)
-                            .sort((x,y)=>x.d-y.d)
-                            .slice(0, 3 + Math.floor(Math.random()*2));
-
-        for(const o of dists){
-          const j = o.idx;
-          const key = i<j ? `${i}-${j}` : `${j}-${i}`;
-          if(edges.some(e=>e.key===key)) continue;
-          const b = points[j];
-          if(o.d < 110 || o.d > 320) continue;
-          edges.push({
-            key,
-            a:i, b:j,
-            // a slight curve for "hand-drawn"
-            cx: (a.x+b.x)/2 + rand(-20,20),
-            cy: (a.y+b.y)/2 + rand(-20,20)
-          });
-        }
-      }
-    }
-
-    function drawInkBase(){
-      ictx.clearRect(0,0,W,H);
-
-      // subtle vignette ink stain
-      ictx.fillStyle = "rgba(43,26,18,0.06)";
-      ictx.fillRect(0,0,W,H);
-
-      // corridors
-      ictx.lineWidth = 1.2;
-      ictx.strokeStyle = "rgba(43,26,18,0.55)";
-      for(const e of edges){
-        const A = points[e.a], B = points[e.b];
-        ictx.beginPath();
-        ictx.moveTo(A.x + rand(-.6,.6), A.y + rand(-.6,.6));
-        ictx.quadraticCurveTo(e.cx, e.cy, B.x + rand(-.6,.6), B.y + rand(-.6,.6));
-        ictx.stroke();
-      }
-
-      // nodes
-      ictx.fillStyle = "rgba(43,26,18,0.72)";
-      for(let i=0;i<points.length;i++){
-        const p = points[i];
-        ictx.beginPath();
-        ictx.arc(p.x, p.y, rand(1.2, 2.8), 0, Math.PI*2);
-        ictx.fill();
-      }
-
-      // labels
-      ictx.font = "12px ui-serif, Georgia, Times, serif";
-      ictx.fillStyle = "rgba(43,26,18,0.72)";
-      for(let i=0;i<labels.length;i++){
-        const p = points[(i*3) % points.length];
-        ictx.save();
-        ictx.translate(p.x, p.y);
-        ictx.rotate(rand(-0.08, 0.08));
-        ictx.fillText(labels[i], 10, -10);
-        ictx.restore();
-      }
-    }
-
-    // --- fog layer: darkness to be erased by brush ---
-    function resetFog(){
-      // a dark layer with blotches
-      fctx.clearRect(0,0,W,H);
-      const g = fctx.createLinearGradient(0,0,0,H);
-      g.addColorStop(0, "rgba(0,0,0,0.88)");
-      g.addColorStop(1, "rgba(0,0,0,0.80)");
-      fctx.fillStyle = g;
-      fctx.fillRect(0,0,W,H);
-
-      // blotchy grime
-      for(let i=0;i<70;i++){
-        const x = rand(0,W), y = rand(0,H);
-        const r = rand(40,160);
-        const gg = fctx.createRadialGradient(x,y,0,x,y,r);
-        gg.addColorStop(0, "rgba(0,0,0,0.0)");
-        gg.addColorStop(1, "rgba(0,0,0,0.20)");
-        fctx.fillStyle = gg;
-        fctx.beginPath();
-        fctx.arc(x,y,r,0,Math.PI*2);
-        fctx.fill();
-      }
-    }
-
-    function eraseFog(x,y, strength=1){
-      // erase with soft round brush
-      const radius = 90 * strength;
-      const g = fctx.createRadialGradient(x,y,0,x,y,radius);
-      g.addColorStop(0, "rgba(0,0,0,0.95)");
-      g.addColorStop(0.45, "rgba(0,0,0,0.55)");
-      g.addColorStop(1, "rgba(0,0,0,0.0)");
-      fctx.globalCompositeOperation = "destination-out";
-      fctx.fillStyle = g;
-      fctx.beginPath();
-      fctx.arc(x,y,radius,0,Math.PI*2);
-      fctx.fill();
-      fctx.globalCompositeOperation = "source-over";
-    }
-
-    // --- moving "people" on the corridors ---
-    function seedPeople(){
-      people = [];
-      const m = 7;
-      for(let i=0;i<m;i++){
-        const e = edges[Math.floor(Math.random()*edges.length)];
-        const t = Math.random();
-        const dir = Math.random() < 0.5 ? 1 : -1;
-        people.push({
-          name: pick(peopleNames),
-          edge: e,
-          t, dir,
-          speed: rand(0.02, 0.055), // per second-ish
-          wobble: rand(0.6, 1.4),
-          blink: rand(0, 2)
-        });
-      }
-    }
-
-    function qPointOnEdge(e, t){
-      const A = points[e.a], B = points[e.b];
-      // quadratic bezier point
-      const x = (1-t)*(1-t)*A.x + 2*(1-t)*t*e.cx + t*t*B.x;
-      const y = (1-t)*(1-t)*A.y + 2*(1-t)*t*e.cy + t*t*B.y;
-      return {x,y};
-    }
-
-    function drawPeople(dt, time){
-      // redraw people on top without destroying base: easiest is redraw base each frame
-      drawInkBase();
-
-      for(const p of people){
-        p.t += p.dir * p.speed * dt;
-        if(p.t > 1){ p.t = 1; p.dir *= -1; p.edge = pick(edges); }
-        if(p.t < 0){ p.t = 0; p.dir *= -1; p.edge = pick(edges*
-
+  <script src="./app.js"></script>
+</body>
+</html>
